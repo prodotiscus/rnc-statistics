@@ -131,3 +131,4 @@ dmypy.json
 # RNCStatistics project files
 queries/
 data/
+extractions/
