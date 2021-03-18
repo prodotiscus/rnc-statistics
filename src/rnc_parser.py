@@ -3,6 +3,12 @@ import re
 from typing import Dict, Iterator, Tuple
 
 
+def is_last_page(raw_html: str) -> bool:
+    model = lxml.html.fromstring(raw_html)
+    next_buttons = model.xpath("//*[text()='следующая страница']")
+    return not next_buttons
+
+
 def parse_search_stats(raw_html: str) -> Dict[str, int]:
     model = lxml.html.fromstring(raw_html)
     stat_blocks = model.xpath("//*[@class='stat-number']/..")
