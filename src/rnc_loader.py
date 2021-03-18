@@ -70,8 +70,8 @@ class MainCorpusLexGram(QueryBuilder):
         if lexeme.dist1 is None or lexeme.dist2 is None:
             raise ValueError
         return f"&lex{n}={lex_n}&gramm{n}={gramm_n}" +\
-        f"&sem1={sem_n}&flags{n}={flags_n}&sem-mod{n}={sem_mod_n}" +\
-        f"&min1={lexeme.dist1}&min2={lexeme.dist2}"
+        f"&sem{n}={sem_n}&flags{n}={flags_n}&sem-mod{n}={sem_mod_n}" +\
+        f"&min{n}={lexeme.dist1}&max{n}={lexeme.dist2}"
 
     def add_lexeme(self, lexeme: lexeme) -> None:
         super().add_lexeme(lexeme)
