@@ -71,7 +71,7 @@ class MainCorpusLexGram(QueryBuilder):
             raise ValueError
         return f"&lex{n}={lex_n}&gramm{n}={gramm_n}" +\
         f"&sem{n}={sem_n}&flags{n}={flags_n}&sem-mod{n}={sem_mod_n}" +\
-        f"&min{n}={lexeme.dist1}&max{n}={lexeme.dist2}"
+        f"&min{n+1}={lexeme.dist1}&max{n+1}={lexeme.dist2}"
 
     def add_lexeme(self, lexeme: lexeme) -> None:
         super().add_lexeme(lexeme)
