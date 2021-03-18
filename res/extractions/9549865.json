@@ -1,0 +1,8 @@
+{
+  "name": "randomized",
+  "refers_to_data": 546936,
+  "index_sequence": [5, 2, 1, 4, 3],
+  "checked_indices": [1],
+  "now_item_of_sequence": 3,
+  "items_per_page": 3
+}
