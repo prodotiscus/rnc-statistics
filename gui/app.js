@@ -53,9 +53,6 @@ window.addEventListener("load", function () {
         if (!this.run_download) return;
         (function(t) {
           $.get("/download_check_ten/" + t.working_on_query, function (d) {
-          console.log(d);
-          console.log(this);
-          console.log(t);
           if (d.all_matches) {
             t.downloader.all_matches = d.all_matches;
             t.downloader.downloaded = d.downloaded;
