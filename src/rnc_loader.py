@@ -76,3 +76,10 @@ class MainCorpusLexGram(QueryBuilder):
     def add_lexeme(self, lexeme: lexeme) -> None:
         super().add_lexeme(lexeme)
         self.number_lexemes += 1
+
+
+def safe_select_builder(name: str) -> QueryBuilder:
+    if name == "MainCorpusLexGram":
+        return MainCorpusLexGram
+    else:
+        raise ValueError

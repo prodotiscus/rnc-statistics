@@ -10,7 +10,7 @@ def make_id() -> int:
 
 
 def get_metadata(res_path: str, file_name: str) -> Dict[str, Any]:
-    text = open(os.path.join(res_path, "queries", file_name, **fkw)).read()
+    text = open(os.path.join(res_path, "queries", f"{file_name}.json"), **fkw).read()
     return json.loads(text)
 
 
