@@ -1,0 +1,7 @@
+#tabs {
+  display: inline;
+}
+
+#tabs .active {
+  font-weight: bold;
+}

@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="static/app.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+  </head>
+  <body>
+    <div id="app">
+
+      <div id="tabs">
+        <a href="#" :class="{active: mode == 'mainPage'}" @click="mode='mainPage'">Main page</a>
+        <a href="#" :class="{active: mode == 'randomizer'}" @click="mode='randomizer'">Randomizer</a>
+        <a href="#" :class="{active: mode == 'query-stats'}" @click="mode='query-stats'">Query stats</a>
+      </div>
+
+      <div class="main-page" v-show="mode == 'mainPage'">
+        <h2>Queries for Russian National Corpus (ruscorpora.ru)</h2>
+        <div>
+          <div v-for="qo in query_objects">
+            {{ qo.query_common_name }}
+            <a href="#" @click="randomizeQuery(qo.query_common_name)">(see random)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="randomizer" v-show="mode == 'randomizer'">
+
+    </div>
+
+    <script src="static/app.js"></script>
+  </body>
+</html>
