@@ -34,7 +34,7 @@ class CorpusQuery:
             passing = []
             if item["class"] == "token":
                 for attr in ["lex", "gr", "add", "sem"]:
-                    passing.append(item[attr] if attr in item else None)
+                    passing.append(",".join(item[attr]) if attr in item else None)
                 lmt: List[Union[int,str,None]] = [None, None]
                 if k < len(decoded)-1 and decoded[k+1]["class"] == "distance":
                     lmt = decoded[k+1]["limits"]

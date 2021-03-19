@@ -13,6 +13,8 @@ def parse_search_stats(raw_html: str) -> Dict[str, int]:
     model = lxml.html.fromstring(raw_html)
     stat_blocks = model.xpath("//*[@class='stat-number']/..")
     local_search = 1
+    if len(stat_blocks) < 2:
+        return dict(documents=0, matches=0)
     d, m = stat_blocks[local_search].xpath("./*[@class='stat-number']")
     return {
         "documents": int(d.text.replace(" ", "")),
