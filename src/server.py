@@ -1,9 +1,12 @@
 import json
 import os
+import rnc_agent
+import rnc_loader
 import webview
 from default import fkw
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from typing import Dict, Iterator, List
+from writing import get_metadata, get_data
 
 gui_path = os.path.join(os.path.dirname(__file__), "..", "gui")
 res_path = os.path.join(os.path.dirname(__file__), "..", "res")
@@ -40,3 +43,36 @@ def response_static(filename):
 @server.route("/load_query_objects")
 def load_query_objects():
     return jsonify({"query_objects": list_query_objects()})
+
+
+@server.route("/download_check_ten/<query_file>")
+def download_check_ten(query_file):
+    a = rnc_agent.Agent(res_path, f"{query_file}.json")
+    query_meta = get_metadata(res_path, query_file)
+    working_on = None
+
+    for n in range(len(query_meta["query_strings"])):
+        if n not in query_meta["query_strings_done"]:
+            working_on = n
+            break
+
+    finished = False
+    if working_on is not None:
+        a.query_builder = rnc_loader.safe_select_builder(
+            query_meta["use_builder"])
+        try:
+            result = a.load_more(working_on, 10)
+        except StopIteration:
+            finished = True
+        # refresh meta-data
+        query_meta = get_metadata(res_path, query_file)
+    if working_on is not None and not finished:
+        finished = working_on in query_meta["query_strings_done"]
+    elif working_on is None:
+        finished = True
+
+    return jsonify({
+        "all_matches": query_meta["number_matches"],
+        "downloaded": len(get_data(res_path, query_meta["data_id"])),
+        "finished": finished
+    })

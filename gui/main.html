@@ -10,22 +10,38 @@
 
       <div id="tabs">
         <a href="#" :class="{active: mode == 'mainPage'}" @click="mode='mainPage'">Main page</a>
+        <a href="#" :class="{active: mode == 'downloader'}" @click="mode='downloader'">Download</a>
         <a href="#" :class="{active: mode == 'randomizer'}" @click="mode='randomizer'">Randomizer</a>
         <a href="#" :class="{active: mode == 'query-stats'}" @click="mode='query-stats'">Query stats</a>
       </div>
 
       <div class="main-page" v-show="mode == 'mainPage'">
-        <h2>Queries for Russian National Corpus (ruscorpora.ru)</h2>
-        <div>
-          <div v-for="qo in query_objects">
-            {{ qo.query_common_name }}
-            <a href="#" @click="randomizeQuery(qo.query_common_name)">(see random)</a>
+          <h2>Queries for Russian National Corpus (ruscorpora.ru)</h2>
+          <div>
+            <div v-for="qo in query_objects">
+              {{ qo.query_common_name }}
+              <a href="#" @click="downloadQuery(qo.query_file_name)">(download)</a>
+              <a href="#" @click="randomizeQuery(qo.query_file_name)">(see random)</a>
+            </div>
+          </div>
+        </div>
+
+
+      <div class="downloader" v-show="mode == 'downloader'">
+        <div class="downloading-progress">
+          Downloaded {{ downloader.downloaded }} of {{ downloader.all_matches }}
+          <a v-show="!downloader.finished">({{ downloader.percentage }}%)</a>
+          <a v-show="downloader.finished">(finished!)</a>
+          <div class="stop-button" v-show="!downloader.finished">
+            <p>Downloading...</p>
+            <button @click="toggleDownload()">Stop downloading</button>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="randomizer" v-show="mode == 'randomizer'">
+      <div class="randomizer" v-show="mode == 'randomizer'">
+
+      </div>
 
     </div>
 
