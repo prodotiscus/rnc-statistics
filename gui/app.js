@@ -4,6 +4,9 @@ window.addEventListener("load", function () {
     data: {
       mode: "mainPage",
       query_objects: [],
+      query_meta: {
+        query_common_name: ""
+      },
       working_on_query: null,
       downloader: {
         all_matches: 0,
@@ -25,13 +28,15 @@ window.addEventListener("load", function () {
         if (this.run_download)
           this.persistentLoading();
       },
-      randomizeQuery: function (queryCommonName) {
+      randomizeQuery: function (currentQO, queryFileName) {
         this.mode = "randomizer"
-        this.working_on_query = queryCommonName
+        this.query_meta = currentQO
+        this.working_on_query = queryFileName
       },
-      downloadQuery: function (queryCommonName) {
+      downloadQuery: function (currentQO, queryFileName) {
         this.mode = "downloader"
-        this.working_on_query = queryCommonName
+        this.query_meta = currentQO
+        this.working_on_query = queryFileName
         this.clearDownloaderObject()
         this.persistentLoading()
       },
@@ -42,6 +47,7 @@ window.addEventListener("load", function () {
           percentage: 0,
           finished: false
         }
+        this.run_download = true;
       },
       persistentLoading: function () {
         if (!this.run_download) return;

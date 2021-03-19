@@ -20,14 +20,15 @@
           <div>
             <div v-for="qo in query_objects">
               {{ qo.query_common_name }}
-              <a href="#" @click="downloadQuery(qo.query_file_name)">(download)</a>
-              <a href="#" @click="randomizeQuery(qo.query_file_name)">(see random)</a>
+              <a href="#" @click="downloadQuery(qo,qo.query_file_name)">(download)</a>
+              <a href="#" @click="randomizeQuery(qo,qo.query_file_name)">(see random)</a>
             </div>
           </div>
         </div>
 
 
       <div class="downloader" v-show="mode == 'downloader'">
+        <h2>{{ query_meta.query_common_name }}</h2>
         <div class="downloading-progress">
           Downloaded {{ downloader.downloaded }} of {{ downloader.all_matches }}
           <a v-show="!downloader.finished">({{ downloader.percentage }}%)</a>
