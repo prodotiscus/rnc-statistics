@@ -17,7 +17,7 @@ def sort_data(res_path: str,
     new_indices = sort_func(data_indices)
     ext_id = randrange(10**5, 10**10)
 
-    with open(os.path.join(res_path, "extractions", f"{ext_id}.json")) as new_ext:
+    with open(os.path.join(res_path, "extractions", f"{ext_id}.json"), "w", **fkw) as new_ext:
         new_ext.write(json.dumps({
             "name": sorting_name,
             "refers_to_data": file_id,
