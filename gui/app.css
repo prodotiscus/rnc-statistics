@@ -5,3 +5,31 @@
 #tabs .active {
   font-weight: bold;
 }
+
+.nav_row a {
+  margin-right: 10px;
+}
+
+.nav_row a.selected {
+  font-weight: bold;
+}
+
+.extraction-item {
+  margin: 20px;
+}
+
+.extraction-item-title {
+  color: gray;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-decoration: underline;
+}
+
+.g-em {
+  color: red;
+}
+
+.item_selected {
+  background-color: lightgreen;
+}

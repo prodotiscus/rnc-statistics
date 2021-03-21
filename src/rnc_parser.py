@@ -43,5 +43,6 @@ def parse_listed_matches(raw_html: str) -> Iterator[Tuple[str, str, str]]:
 
 def clear_match_html(text: str) -> str:
     text = re.sub(r'<!--.*?>|explain=".*?"|<a href="\/search.xml.*?">.*?<\/a>', '', text)
-    text = re.sub(r'\s{2,}|^\s+', '', text)
+    text = re.sub(r'\s{2,}|^\s+|<\/?li>', '', text)
+    text = re.sub(r'<span class="(?:doc|on)">.+?<\/span>', '', text)
     return text

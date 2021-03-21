@@ -39,3 +39,11 @@ def append_to_data(res_path: str, file_id: int, matches: List[Tuple[str, str, st
 def get_data(res_path: str, file_id: int) -> List[Tuple[str, str, str]]:
     path = os.path.join(res_path, "data", f"{file_id}.json")
     return json.loads(open(path, **fkw).read())["matches"]
+
+
+def save_data(res_path: str, file_id: int, matches: List[Tuple[str,str,str]]):
+    d = json.loads(open(path, **fkw).read())
+    d["matches"] = matches
+    with open(os.path.join(res_path, "data", f"{file_id}.json"), "w") as df:
+        df.write(d)
+        df.close()

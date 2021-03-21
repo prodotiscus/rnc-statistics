@@ -1,3 +1,4 @@
+import browse
 import json
 import os
 import rnc_agent
@@ -6,7 +7,7 @@ import webview
 from default import fkw
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from typing import Dict, Iterator, List
-from writing import get_metadata, get_data
+from writing import get_metadata, get_data, save_data
 
 gui_path = os.path.join(os.path.dirname(__file__), "..", "gui")
 res_path = os.path.join(os.path.dirname(__file__), "..", "res")
@@ -27,7 +28,18 @@ def iter_query_objects() -> Iterator[Dict[str, str]]:
 
 
 def list_query_objects() -> List[Dict[str, str]]:
-    return [query_obj for query_obj in iter_query_objects()]
+    query_obj = []
+    for q in iter_query_objects():
+        print(q)
+        q["extractions"] = []
+        e_path = os.path.join(res_path, "extractions")
+        exts = os.listdir(e_path)
+        for ext_name in exts:
+            ext_c = json.loads(open(os.path.join(e_path, ext_name), **fkw).read())
+            if ext_c["refers_to_data"] == q["data_id"]:
+                q["extractions"].append(int(ext_name.replace(".json", "")))
+        query_obj.append(q)
+    return query_obj
 
 
 @server.route("/")
@@ -75,4 +87,37 @@ def download_check_ten(query_file):
         "all_matches": query_meta["number_matches"],
         "downloaded": len(get_data(res_path, query_meta["data_id"])),
         "finished": finished
+    })
+
+
+@server.route("/navs_for_extraction/<int:extraction_id>/<int:page_index>")
+def navs_for(extraction_id: int, items_per_page: int = 10, page_index: int=1):
+    em = browse.extraction_meta(res_path, extraction_id)
+    num_indices = em["sequence"]
+    now_on_item = page_index * items_per_page - 1
+    nav_len = 11
+    navs = browse.generate_navs(num_indices, now_on_item, items_per_page, nav_len)
+    return jsonify({
+        "navs": navs,
+        "selected": page_index
+    })
+
+
+@server.route("/get_items/<int:extraction_id>/<int:nav_index>")
+def get_items(extraction_id: int, nav_index: int):
+    em = browse.extraction_meta(res_path, extraction_id)
+    ipp = 10
+    limit, offset = browse.nav_number_to_lo(nav_index, len(em["sequence"]), ipp)
+    items = browse.open_extraction(res_path, extraction_id, limit, offset)
+    return jsonify({
+        "items": [x for x in items]
+    })
+
+
+@server.route("/change_selection/<int:extraction_id>/<int:g_index>/<command>")
+def change_selection(extraction_id, g_index, command):
+    sel_value: bool = (command == "select")
+    em = browse.update_selection(res_path, extraction_id, g_index, sel_value)
+    return jsonify({
+        "result": "success"
     })
