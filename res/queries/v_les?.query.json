@@ -1,0 +1,6 @@
+{
+  "query_common_name": "v les?",
+  "query_strings": [
+    "[lex:в]{1}[lex:лес]"
+  ]
+}

@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="static/app.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+  </head>
+  <body>
+    <div id="app">
+
+      <div id="tabs">
+        <a href="#" :class="{active: mode == 'mainPage'}" @click="mode='mainPage'">Main page</a>
+        <a href="#" :class="{active: mode == 'downloader'}" @click="mode='downloader'">Download</a>
+        <a href="#" :class="{active: mode == 'randomizer'}" @click="mode='randomizer'">Randomizer</a>
+        <a href="#" :class="{active: mode == 'browser'}" @click="mode='browser'">Browse</a>
+        <a href="#" :class="{active: mode == 'query-stats'}" @click="mode='query-stats'">Query stats</a>
+      </div>
+
+      <div class="main-page" v-show="mode == 'mainPage'">
+          <h2>Queries for Russian National Corpus (ruscorpora.ru)</h2>
+          <div>
+            <div v-for="qo in query_objects" @click="working_on_query=qo.query_file_name">
+              {{ qo.query_common_name }}
+              <a href="#" @click="downloadQuery(qo,qo.query_file_name)">(download)</a>
+              <a href="#" @click="randomizeQuery(qo,qo.query_file_name)">(see random)</a>
+              <a href="#" v-for="ext_id in qo.extractions" @click="working_on_query=qo.query_file_name;browseExt(ext_id)">[{{ext_id}}]</a>
+            </div>
+          </div>
+        </div>
+
+
+      <div class="downloader" v-show="mode == 'downloader'">
+        <h2>{{ query_meta.query_common_name }}</h2>
+        <div class="downloading-progress">
+          Downloaded {{ downloader.downloaded }} of {{ downloader.all_matches }}
+          <a v-show="!downloader.finished">({{ downloader.percentage }}%)</a>
+          <a v-show="downloader.finished">(finished!)</a>
+          <div class="stop-button" v-show="!downloader.finished">
+            <p>Downloading...</p>
+            <button @click="toggleDownload()">Stop downloading</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="randomizer" v-show="mode == 'randomizer'">
+
+      </div>
+
+      <div class="browser" v-show="mode == 'browser'">
+        <div class="nav_row">
+          <a
+            href="#"
+            @click="loadTabsByIndex(nav)"
+            v-for="nav in navs.list_navs"
+            :class="{selected: nav == navs.selected}"
+            >{{ nav }}</a>
+            <a
+              href="#"
+              @click="markAsStop(nav)"
+              v-for="nav in navs.list_navs"
+              v-show="nav == navs.selected"
+              :class="{done: stop_is_nav == nav}"
+              ><sub>конец отбора</sub></a>
+        </div>
+
+        <div class="browser_items">
+          <div class="extraction-item" v-for="element in extraction_items"
+            :class="{item_selected: element.checked}"
+            @click="toggleSelection(element.j, element.k)">
+            <p class="extraction-item-title">{{ element.item[0] }}</p>
+            <span v-html="element.item[1]"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script src="static/app.js"></script>
+  </body>
+</html>
