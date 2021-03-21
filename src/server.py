@@ -103,6 +103,14 @@ def navs_for(extraction_id: int, items_per_page: int = 10, page_index: int=1):
     })
 
 
+@server.route("/mark_as_stop/<int:extraction_id>/<query_name>/<int:nav_index>")
+def mark_as_stop(extraction_id: int, query_name: str, nav_index: int):
+    browse.mark_as_stop(res_path, extraction_id, query_name, nav_index)
+    return jsonify({
+        "result": "success"
+    })
+
+
 @server.route("/get_items/<int:extraction_id>/<int:nav_index>")
 def get_items(extraction_id: int, nav_index: int):
     em = browse.extraction_meta(res_path, extraction_id)

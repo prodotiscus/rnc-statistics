@@ -42,6 +42,7 @@ def get_data(res_path: str, file_id: int) -> List[Tuple[str, str, str]]:
 
 
 def save_data(res_path: str, file_id: int, matches: List[Tuple[str,str,str]]):
+    path = os.path.join(res_path, "data", f"{file_id}.json")
     d = json.loads(open(path, **fkw).read())
     d["matches"] = matches
     with open(os.path.join(res_path, "data", f"{file_id}.json"), "w") as df:

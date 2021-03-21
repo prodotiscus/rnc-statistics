@@ -19,11 +19,11 @@
       <div class="main-page" v-show="mode == 'mainPage'">
           <h2>Queries for Russian National Corpus (ruscorpora.ru)</h2>
           <div>
-            <div v-for="qo in query_objects">
+            <div v-for="qo in query_objects" @click="working_on_query=qo.query_file_name">
               {{ qo.query_common_name }}
               <a href="#" @click="downloadQuery(qo,qo.query_file_name)">(download)</a>
               <a href="#" @click="randomizeQuery(qo,qo.query_file_name)">(see random)</a>
-              <a href="#" v-for="ext_id in qo.extractions" @click="browseExt(ext_id)">[{{ext_id}}]</a>
+              <a href="#" v-for="ext_id in qo.extractions" @click="working_on_query=qo.query_file_name;browseExt(ext_id)">[{{ext_id}}]</a>
             </div>
           </div>
         </div>
@@ -54,7 +54,13 @@
             v-for="nav in navs.list_navs"
             :class="{selected: nav == navs.selected}"
             >{{ nav }}</a>
-          </p>
+            <a
+              href="#"
+              @click="markAsStop(nav)"
+              v-for="nav in navs.list_navs"
+              v-show="nav == navs.selected"
+              :class="{done: stop_is_nav == nav}"
+              ><sub>конец отбора</sub></a>
         </div>
 
         <div class="browser_items">

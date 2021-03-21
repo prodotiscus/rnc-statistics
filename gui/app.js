@@ -20,7 +20,8 @@ window.addEventListener("load", function () {
         selected: 1
       },
       current_extraction: null,
-      extraction_items: []
+      extraction_items: [],
+      stop_is_nav: -1
     },
     mounted() {
       var self = this
@@ -105,6 +106,15 @@ window.addEventListener("load", function () {
         function (d) {
 
         })
+      },
+      markAsStop: function (nav_index) {
+        this.stop_is_nav = nav_index;
+        (function(t) {
+          $.get("/mark_as_stop/" + t.current_extraction + "/" + t.working_on_query + "/" + nav_index,
+          function (d) {
+
+          })
+        })(this)
       }
     }
 

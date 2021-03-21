@@ -33,3 +33,7 @@
 .item_selected {
   background-color: lightgreen;
 }
+
+.nav_row .done {
+  color: green;
+}
