@@ -76,25 +76,31 @@ class Agent:
         builder.current_page = last_page + 1
 
         for _ in range(last_page, last_page + yet_more):
-            loaded = self.load_page(builder.build_query())
+            break_loop: bool = False
+            for n in range(3): # triple-check before finishing the query
+                loaded = self.load_page(builder.build_query())
 
-            if num_query not in self.q_file["query_strings_started"]:
-                self.q_file["number_documents"] += loaded["stats"]["documents"]
-                self.q_file["number_matches"] += loaded["stats"]["matches"]
-                self.q_file["query_strings_started"].append(num_query)
-                self.rewrite_query_file()
+                if num_query not in self.q_file["query_strings_started"]:
+                    self.q_file["number_documents"] += loaded["stats"]["documents"]
+                    self.q_file["number_matches"] += loaded["stats"]["matches"]
+                    self.q_file["query_strings_started"].append(num_query)
+                    self.rewrite_query_file()
 
-            local_data += loaded["page_matches"]
+                local_data += loaded["page_matches"]
 
-            self.q_file["last_pages_by_query"][str(num_query)] = builder.current_page
+                self.q_file["last_pages_by_query"][str(num_query)] = builder.current_page
 
-            builder.next_page()
+                if loaded["is_last_page"] and n > 1:
+                    self.q_file["query_strings_done"].append(num_query)
+                    self.rewrite_query_file()
+                    break_loop = True
+                    break
+                elif not loaded["is_last_page"]:
+                    builder.next_page()
+                    break
 
-            if loaded["is_last_page"]:
-                self.q_file["query_strings_done"].append(num_query)
-                self.rewrite_query_file()
+            if break_loop:
                 break
-
         self.rewrite_query_file()
         self.update_data_file(local_data)
 
