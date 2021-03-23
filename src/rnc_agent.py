@@ -6,7 +6,11 @@ from default import fkw
 from parse_query import CorpusQuery
 from random import randrange
 from rnc_loader import QueryBuilder
+from time import sleep
 from typing import List, Tuple, Union
+
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Agent:
@@ -97,11 +101,25 @@ class Agent:
         return local_data
 
     def load_page(self, url: str):
-        r = requests.get(url)
-        raw_html: str = r.text
+        r, times = self.handled_get_request(url, 1)
+
+        if prs.is_last_page(r.text):
+            while times < 3 and prs.is_last_page(r.text):
+                r, times = self.handled_get_request(url, times, -2)
+                times += 1
 
         return {
-            "stats": prs.parse_search_stats(raw_html),
-            "page_matches": prs.parse_listed_matches(raw_html),
-            "is_last_page": prs.is_last_page(raw_html)
+            "stats": prs.parse_search_stats(r.text),
+            "page_matches": prs.parse_listed_matches(r.text),
+            "is_last_page": prs.is_last_page(r.text)
         }
+
+    @staticmethod
+    def handled_get_request(url: str, times: int, status_code: int=-1):
+        while status_code != 200:
+            if status_code != -1:
+                sleep(30)
+            r = requests.get(url)
+            if r.status_code == 200:
+                return r, times
+            status_code = r.status_code
