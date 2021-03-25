@@ -6,7 +6,11 @@ from default import fkw
 from parse_query import CorpusQuery
 from random import randrange
 from rnc_loader import QueryBuilder
+from time import sleep
 from typing import List, Tuple, Union
+
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Agent:
@@ -72,36 +76,56 @@ class Agent:
         builder.current_page = last_page + 1
 
         for _ in range(last_page, last_page + yet_more):
-            loaded = self.load_page(builder.build_query())
+            break_loop: bool = False
+            for n in range(3): # triple-check before finishing the query
+                loaded = self.load_page(builder.build_query())
 
-            if num_query not in self.q_file["query_strings_started"]:
-                self.q_file["number_documents"] += loaded["stats"]["documents"]
-                self.q_file["number_matches"] += loaded["stats"]["matches"]
-                self.q_file["query_strings_started"].append(num_query)
-                self.rewrite_query_file()
+                if num_query not in self.q_file["query_strings_started"]:
+                    self.q_file["number_documents"] += loaded["stats"]["documents"]
+                    self.q_file["number_matches"] += loaded["stats"]["matches"]
+                    self.q_file["query_strings_started"].append(num_query)
+                    self.rewrite_query_file()
 
-            local_data += loaded["page_matches"]
+                local_data += loaded["page_matches"]
 
-            self.q_file["last_pages_by_query"][str(num_query)] = builder.current_page
+                self.q_file["last_pages_by_query"][str(num_query)] = builder.current_page
 
-            builder.next_page()
+                if loaded["is_last_page"] and n > 1:
+                    self.q_file["query_strings_done"].append(num_query)
+                    self.rewrite_query_file()
+                    break_loop = True
+                    break
+                elif not loaded["is_last_page"]:
+                    builder.next_page()
+                    break
 
-            if loaded["is_last_page"]:
-                self.q_file["query_strings_done"].append(num_query)
-                self.rewrite_query_file()
+            if break_loop:
                 break
-
         self.rewrite_query_file()
         self.update_data_file(local_data)
 
         return local_data
 
     def load_page(self, url: str):
-        r = requests.get(url)
-        raw_html: str = r.text
+        r, times = self.handled_get_request(url, 1)
+
+        if prs.is_last_page(r.text):
+            while times < 3 and prs.is_last_page(r.text):
+                r, times = self.handled_get_request(url, times, -2)
+                times += 1
 
         return {
-            "stats": prs.parse_search_stats(raw_html),
-            "page_matches": prs.parse_listed_matches(raw_html),
-            "is_last_page": prs.is_last_page(raw_html)
+            "stats": prs.parse_search_stats(r.text),
+            "page_matches": prs.parse_listed_matches(r.text),
+            "is_last_page": prs.is_last_page(r.text)
         }
+
+    @staticmethod
+    def handled_get_request(url: str, times: int, status_code: int=-1):
+        while status_code != 200:
+            if status_code != -1:
+                sleep(30)
+            r = requests.get(url)
+            if r.status_code == 200:
+                return r, times
+            status_code = r.status_code

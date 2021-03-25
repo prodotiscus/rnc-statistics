@@ -29,6 +29,7 @@ def extraction_meta(res_path: str, extraction_id: int, items_per_page: int=10):
     e_path = os.path.join(res_path, "extractions", f"{extraction_id}.json")
     extraction = json.loads(open(e_path, **fkw).read())
     return {
+        "refers_to": extraction["refers_to_data"],
         "sequence": extraction["index_sequence"],
         "selected": extraction["checked_indices"],
         "now_on": extraction["now_item_of_sequence"],
