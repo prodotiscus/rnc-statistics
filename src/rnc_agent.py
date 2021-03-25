@@ -7,7 +7,7 @@ from parse_query import CorpusQuery
 from random import randrange
 from rnc_loader import QueryBuilder
 from time import sleep
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -122,10 +122,13 @@ class Agent:
 
     @staticmethod
     def handled_get_request(url: str, times: int, status_code: int=-1):
+        ua_header_dict: Dict[str, str] = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+        }
         while status_code != 200:
             if status_code != -1:
                 sleep(30)
-            r = requests.get(url)
+            r = requests.get(url, headers=ua_header_dict)
             if r.status_code == 200:
                 return r, times
             status_code = r.status_code
